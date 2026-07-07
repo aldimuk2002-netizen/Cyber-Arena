@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кибер-Арена: Ярость Левиафана</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+</head>
+<body>
+
+    <h1>КИБЕР АРЕНА</h1>
+
+    <div id="hud-container">
+        <div id="boss-hud">
+            <div id="boss-title" style="font-weight: bold; margin-bottom: 2px; color: #ff3333; font-size: 14px; letter-spacing: 2px;">ДРЕВНИЙ КИБЕР-ЛЕВИАФАН</div>
+            <div class="boss-hp-container"><div id="boss-hp" class="hp-bar" style="background-color: #ff3333;"></div><div id="boss-hp-text" class="hp-text boss-hp-text">1500 / 1500 HP</div></div>
+        </div>
+
+        <div id="hud">
+            <div>
+                <div id="name-p1" style="font-weight: bold; margin-bottom: 2px; color: #00f0ff;">Игрок 1 (Хост)</div>
+                <div class="hp-container"><div id="hp1" class="hp-bar"></div><div id="hp-text1" class="hp-text">0 / 0</div></div>
+            </div>
+            <div>
+                <div id="name-p2" style="font-weight: bold; margin-bottom: 2px; text-align: right; color: #ff0077;">Игрок 2 (Гость)</div>
+                <div class="hp-container"><div id="hp2" class="hp-bar"></div><div id="hp-text2" class="hp-text">0 / 0</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-wrapper">
+        <div id="main-menu">
+            <div id="mode-selection" class="menu-screen">
+                <button id="btn-mode-pvp" class="menu-btn">Локальная Дуэль (1vs1)</button>
+                <button id="btn-mode-boss" class="menu-btn">Локальный Босс-Рейд (Вдвоем против Дракона)</button>
+                <button id="btn-mode-network" class="menu-btn network-btn">Сетевая Игра (Онлайн)</button>
+                <button id="btn-mode-settings" class="menu-btn settings-btn">Настройки управления</button>
+            </div>
+
+            <div id="settings-panel" class="menu-screen">
+                <div style="font-size: 18px; font-weight: bold; color: #00f0ff; margin-bottom: 10px; letter-spacing: 2px;">НАСТРОЙКА КЛАВИШ</div>
+                <div class="settings-grid">
+                    <div class="settings-col">
+                        <h3 style="color: #00f0ff;">Игрок 1</h3>
+                        <div class="control-row"><span>Вверх</span><button class="key-assign-btn" id="btn-p1-up">W</button></div>
+                        <div class="control-row"><span>Вниз</span><button class="key-assign-btn" id="btn-p1-down">S</button></div>
+                        <div class="control-row"><span>Влево</span><button class="key-assign-btn" id="btn-p1-left">A</button></div>
+                        <div class="control-row"><span>Вправо</span><button class="key-assign-btn" id="btn-p1-right">D</button></div>
+                        <div class="control-row"><span>Атака</span><button class="key-assign-btn" id="btn-p1-attack">Space</button></div>
+                    </div>
+                    <div class="settings-col">
+                        <h3 style="color: #ff0077;">Игрок 2</h3>
+                        <div class="control-row"><span>Вверх</span><button class="key-assign-btn" id="btn-p2-up">ArrowUp</button></div>
+                        <div class="control-row"><span>Вниз</span><button class="key-assign-btn" id="btn-p2-down">ArrowDown</button></div>
+                        <div class="control-row"><span>Влево</span><button class="key-assign-btn" id="btn-p2-left">ArrowLeft</button></div>
+                        <div class="control-row"><span>Вправо</span><button class="key-assign-btn" id="btn-p2-right">ArrowRight</button></div>
+                        <div class="control-row"><span>Атака</span><button class="key-assign-btn" id="btn-p2-attack">Enter</button></div>
+                    </div>
+                </div>
+                <button id="btn-settings-done" class="menu-btn" style="width: 150px; padding: 8px; font-size: 12px;">Готово</button>
+            </div>
+
+            <div id="network-panel" class="menu-screen">
+                <div id="net-status-text">Введите ID хоста для прямого P2P подключения.</div>
+                <div id="standard-ui" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <button id="btn-host-room" class="menu-btn" style="border-color:#2ecc71; color:#2ecc71;">1. Создать по ID (Хост)</button>
+                    <div style="display: flex; gap: 6px;">
+                        <input type="text" id="net-id-input" class="net-input" placeholder="Вставьте ID хоста">
+                        <button id="btn-join-room" class="menu-btn" style="width: auto; padding: 10px 15px;">Войти</button>
+                    </div>
+                    <div style="color: #666; font-size: 12px;">— ИЛИ ЕСЛИ НЕ ЗАХОДИТ —</div>
+                    <button id="btn-manual-switch" class="menu-btn" style="border-color:#ff7700; color:#ff7700;">Стопроцентный ручной режим</button>
+                </div>
+
+                <div id="manual-ui" class="manual-box">
+                    <div id="manual-step-text" style="font-size: 12px; color: #ff9900; font-weight: bold;">Шаг 1: Выберите роль</div>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button id="btn-manual-host" class="menu-btn" style="width: 140px; padding: 6px;">Я ХОСТ</button>
+                        <button id="btn-manual-client" class="menu-btn" style="width: 140px; padding: 6px;">Я ГОСТЬ</button>
+                    </div>
+                    <div id="manual-io-section" style="display: none; flex-direction: column; gap: 5px;">
+                        <span style="font-size: 11px; color:#aaa;">Скопируйте этот код и отправьте другу:</span>
+                        <textarea id="manual-output" class="manual-area" readonly></textarea>
+                        <span style="font-size: 11px; color:#aaa;">Вставьте код, полученный от друга:</span>
+                        <textarea id="manual-input" class="manual-area" placeholder="Вставьте код сюда..."></textarea>
+                        <button id="manual-connect-btn" class="menu-btn" style="width: 100%; padding: 8px; margin-top: 5px;">Подключиться</button>
+                    </div>
+                </div>
+                <button id="btn-network-back" class="menu-btn" style="width: 120px; padding: 6px; font-size: 11px;">Назад</button>
+            </div>
+        </div>
+
+        <div id="hat-selectors-overlay">
+            <div class="hat-selector-box" id="hat-box-p1">
+                <button class="hat-arrow-btn" id="hat-p1-prev">◀</button>
+                <div class="hat-label" id="hat-label-p1">Шляпа: Нет</div>
+                <button class="hat-arrow-btn" id="hat-p1-next">▶</button>
+            </div>
+            <div class="hat-selector-box" id="hat-box-p2">
+                <button class="hat-arrow-btn" id="hat-p2-prev">◀</button>
+                <div class="hat-label" id="hat-label-p2">Шляпа: Нет</div>
+                <button class="hat-arrow-btn" id="hat-p2-next">▶</button>
+            </div>
+        </div>
+
+        <!-- Селекторы кастомного цвета (Q/E для П1, ,/. для П2, либо кнопки мышью) -->
+        <div id="color-selectors-overlay">
+            <div class="color-selector-box" id="color-box-p1">
+                <button class="color-arrow-btn" id="color-p1-prev">◀</button>
+                <div class="color-swatch" id="color-swatch-p1"></div>
+                <div class="color-label" id="color-label-p1">Цвет класса</div>
+                <button class="color-arrow-btn" id="color-p1-next">▶</button>
+            </div>
+            <div class="color-selector-box" id="color-box-p2">
+                <button class="color-arrow-btn" id="color-p2-prev">◀</button>
+                <div class="color-swatch" id="color-swatch-p2"></div>
+                <div class="color-label" id="color-label-p2">Цвет класса</div>
+                <button class="color-arrow-btn" id="color-p2-next">▶</button>
+            </div>
+        </div>
+
+        <div id="game-over-overlay">
+            <div id="game-over-title">КОНЕЦ ИГРЫ</div>
+
+            <div id="game-over-main-controls" style="display: flex; flex-direction: column; gap: 12px;">
+                <button id="btn-replay-trigger" class="menu-btn" style="border-color: #00f0ff; color: #00f0ff;">Играть снова</button>
+                <button id="btn-menu-trigger" class="menu-btn" style="border-color: #ff3333; color: #ff3333;">В главное меню</button>
+            </div>
+
+            <div id="game-over-character-choice" class="overlay-choice-box" style="display: none;">
+                <div class="overlay-choice-title">Поменять персонажей?</div>
+                <div style="display: flex; gap: 12px;">
+                    <button id="btn-char-yes" class="menu-btn" style="width: 130px; padding: 10px; font-size: 12px; border-color: #2ecc71; color: #2ecc71;">Да</button>
+                    <button id="btn-char-no" class="menu-btn" style="width: 130px; padding: 10px; font-size: 12px; border-color: #ff7700; color: #ff7700;">Нет</button>
+                </div>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="820" height="520"></canvas>
+    </div>
+
+    <div class="controls-bar">
+        <div><strong>Управление:</strong> <b id="control-badge">Кастомные настройки</b></div>
+        <div><b>Q/E</b> — Цвет П1, <b>,/.</b> — Цвет П2</div>
+        <div><b>ESC</b> — Выход</div>
+        <div><span id="net-status-badge" style="color: #555;">Режим: ...</span></div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
